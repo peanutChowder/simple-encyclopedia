@@ -20,7 +20,7 @@ def search(request):
     if request.method == "POST":
         searched = request.POST['searched']
         matchingEntries = [entry for entry in util.list_entries() if searched.lower() in entry.lower()]
-        
+
         return render(request, "encyclopedia/search.html", {
             'searched': searched,
             "matchingEntries": matchingEntries
@@ -28,13 +28,16 @@ def search(request):
     else:
         return render(request, "encyclopedia/search.html", {})
 
-def tester(request):
-    return HttpResponse("hello")
+def newEntry(request):
+    return render(request, "encyclopedia/new-entry.html", {})
 
 def wikiPage(request, pageName):
     pageMarkdown = open(f"entries/{pageName}.md", "r")
     pageHtml = markdowner.convert(pageMarkdown.read())
 
-    return render(request, "encyclopedia/wikiPage.html", {
+    return render(request, "encyclopedia/wiki-page.html", {
         "content": pageHtml
     })
+
+def tester(request):
+    return HttpResponse("hello")
