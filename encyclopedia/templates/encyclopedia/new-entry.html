@@ -1,9 +1,26 @@
 {% extends "encyclopedia/layout.html" %}
+{% load static %}
 
 {% block title %}
-    Encyclopedia
+    New Entry
+{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'encyclopedia/new-entry.css' %}?{% now 'U' %}">
 {% endblock %}
 
 {% block body %}
-    <h1>Create a new Page</h1>
+    {% if titleExists %}
+        <div class="header-warning">
+            <strong>Note:</strong> Page already exists
+        </div>
+    {% endif %}
+    <h2>Create a new Page</h2>
+    <div class="main">
+        <form action="{% url 'new-entry' %}" method="POST">
+            {% csrf_token %}
+            {{ entryForm }}
+            <input type="submit" value="Create Page">
+        </form>
+    </div>
 {% endblock %}
