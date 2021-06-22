@@ -1,5 +1,16 @@
 {% extends "encyclopedia/layout.html" %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'encyclopedia/wiki-page.css' %}?{% now 'U' %}">
+{% endblock %}
 
 {% block body %}
+    {% if dispSuccessMsg %}
+        <div class="create-success-alert">
+            <strong>Note:</strong> Page created successfully
+            <span class="header-warning-close" onclick="this.parentElement.style.display = 'none';">&times;</span>
+        </div>
+    {% endif %}
     {{ content | safe }}
 {% endblock %}

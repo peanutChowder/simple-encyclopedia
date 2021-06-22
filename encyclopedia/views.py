@@ -12,8 +12,8 @@ from django import forms
 markdowner = Markdown()
 
 class EntryForm(forms.Form):
-    pageTitle = forms.CharField(label="Page Title", widget=forms.TextInput(attrs={"class": "entry-title"}))
-    pageContent = forms.CharField(label="Page Content", widget=forms.Textarea(attrs={"class": "entry-content"}))
+    pageTitle = forms.CharField(label="Page Title", widget=forms.TextInput(attrs={"id": "title-input"}))
+    pageContent = forms.CharField(label="Page Content", widget=forms.Textarea(attrs={"id": "content-input"}))
 
 def index(request):
     return render(request, "encyclopedia/index.html", {})
@@ -38,18 +38,29 @@ def newEntry(request):
             if newTitle.lower() in [title.lower() for title in util.list_entries()]:
                 return render(request, "encyclopedia/new-entry.html", {
                     "entryForm": form,
-                    "titleExists": True
+                    "titleExists": True,
+                    "existingTitle" : newTitle
                 })
-    return render(request, "encyclopedia/new-entry.html", {
+            else:
+                saveEntry(request, newTitle, form.cleaned_data["pageContent"])
+                return wikiPage(request, newTitle, True)
+    else: 
+        return render(request, "encyclopedia/new-entry.html", {
         "entryForm": EntryForm(),
     })
 
-def wikiPage(request, pageName):
+def saveEntry(request, title, content):
+    util.save_entry(title, content)
+
+
+
+def wikiPage(request, pageName, dispSuccessMsg=False):
     pageMarkdown = open(f"entries/{pageName}.md", "r")
     pageHtml = markdowner.convert(pageMarkdown.read())
 
     return render(request, "encyclopedia/wiki-page.html", {
-        "content": pageHtml
+        "content": pageHtml,
+        "dispSuccessMsg": dispSuccessMsg
     })
 
 def allPages(request):

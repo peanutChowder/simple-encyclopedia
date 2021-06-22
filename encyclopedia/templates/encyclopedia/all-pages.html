@@ -1,14 +1,18 @@
 {% extends "encyclopedia/layout.html" %}
-{$ load static %}
+{% load static %}
 
 {% block title %}
     All Pages
 {% endblock %}
 
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'encyclopedia/all-pages.css' %}?{% now 'U' %}">
+{% endblock %}
+
 {% block body %}
     <h2>All Pages</h2>
 
-    <ul>
+    <ul id="all-entries">
         {% for entry in entries %}
             <li><a href="/wiki/{{ entry }}">{{ entry }}</a></li>
         {% endfor %}

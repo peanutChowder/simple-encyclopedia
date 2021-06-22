@@ -3,12 +3,12 @@
     flex-direction: column;
 }
 
-.entry-title {
+#title-input {
     width: 95%;
     padding: 5px 5px;
 }
 
-.entry-content {
+#content-input {
     margin-top: 20px;
     padding: 5px 5px;
     height: 70vh;
@@ -23,4 +23,18 @@
     border: 1px solid black;
     text-align: center;
     border-radius: 6px;
+}
+
+.header-warning-close {
+    border: 1px solid black;
+    background-color: rgb(255, 206, 174);
+    width: 18px;
+    border-radius: 75px;
+    float: right;
+    margin: 0px 10px;
+}
+
+.header-warning-close:hover {
+    cursor: pointer;
+    background-color: rgb(255, 177, 104);
 }

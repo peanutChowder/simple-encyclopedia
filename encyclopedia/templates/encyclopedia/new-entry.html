@@ -12,7 +12,8 @@
 {% block body %}
     {% if titleExists %}
         <div class="header-warning">
-            <strong>Note:</strong> Page already exists
+            <strong>Note:</strong> <a href="/wiki/{{ existingTitle }}">{{ existingTitle }}</a> page already exists
+            <span class="header-warning-close" onclick="this.parentElement.style.display = 'none';">&times;</span>
         </div>
     {% endif %}
     <h2>Create a new Page</h2>
