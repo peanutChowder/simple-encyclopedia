@@ -20,3 +20,8 @@
     cursor: pointer;
     background-color: rgb(150, 250, 92);
 }
+
+#footer {
+    margin-top: 100px;
+    float: right;
+}

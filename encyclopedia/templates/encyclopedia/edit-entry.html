@@ -1,0 +1,21 @@
+{% extends "encyclopedia/layout.html" %}
+{% load static %}
+
+{% block title %}
+    Edit Page
+{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'encyclopedia/new-entry.css' %}?{% now 'U' %}">
+{% endblock %}
+
+{% block body %}
+    <h2>Editing entry "{{ pageTitle }}"</h2>
+    <div class="main">
+        <form action="" method="POST">
+            {% csrf_token %}
+            {{ entryForm }}
+            <input type="submit" value="Save Changes">
+        </form>
+    </div>
+{% endblock %}

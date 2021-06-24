@@ -3,11 +3,14 @@ from logging import PlaceHolder
 import re
 from django.core.exceptions import ValidationError
 from django.http.response import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from . import util
 
 from markdown2 import Markdown
 from django import forms
+
+import random
+from os import remove
 
 markdowner = Markdown()
 
@@ -30,6 +33,34 @@ def search(request):
     else:
         return render(request, "encyclopedia/search.html", {})
 
+def editEntry(request, pageName):
+    # Render page with prepopulated entry content
+    if request.method == "GET": 
+        pageMarkdown = open(f"entries/{pageName}.md", "r")
+        pageContent = pageMarkdown.read()
+        editForm = EntryForm({"pageTitle": pageName, "pageContent": pageContent})
+
+        return render(request, "encyclopedia/edit-entry.html", {
+        "entryForm": editForm,
+        "pageTitle": pageName
+        })
+
+    # Deal with user edits to page
+    else:
+        toSaveForm = EntryForm(request.POST)
+        if toSaveForm.is_valid():
+            editedTitle = toSaveForm.cleaned_data["pageTitle"]
+            editedContent = toSaveForm.cleaned_data["pageContent"]
+
+            # Delete previous .md file name if name changed
+            if editedTitle != pageName:
+                remove(f"entries/{pageName}.md")
+
+            # Save and redirect user to the edited page
+            saveEntry(editedTitle, editedContent)
+            return wikiPage(request, editedTitle, True)
+
+
 def newEntry(request):
     if request.method == "POST":
         form = EntryForm(request.POST)
@@ -39,19 +70,22 @@ def newEntry(request):
                 return render(request, "encyclopedia/new-entry.html", {
                     "entryForm": form,
                     "titleExists": True,
-                    "existingTitle" : newTitle
+                    "existingPageTitle" : newTitle
                 })
             else:
-                saveEntry(request, newTitle, form.cleaned_data["pageContent"])
+                saveEntry(newTitle, form.cleaned_data["pageContent"])
                 return wikiPage(request, newTitle, True)
     else: 
         return render(request, "encyclopedia/new-entry.html", {
-        "entryForm": EntryForm(),
+        "entryForm": EntryForm()
     })
 
-def saveEntry(request, title, content):
+def saveEntry(title, content):
     util.save_entry(title, content)
 
+def randomPage(request):
+    randomTitle = random.choice(util.list_entries())
+    return redirect(f"wiki/{randomTitle}")
 
 
 def wikiPage(request, pageName, dispSuccessMsg=False):
@@ -59,6 +93,7 @@ def wikiPage(request, pageName, dispSuccessMsg=False):
     pageHtml = markdowner.convert(pageMarkdown.read())
 
     return render(request, "encyclopedia/wiki-page.html", {
+        "pageName": pageName,
         "content": pageHtml,
         "dispSuccessMsg": dispSuccessMsg
     })
